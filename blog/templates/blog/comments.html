@@ -1,0 +1,88 @@
+{% load static %}
+<div class="comments" id="comment_thread_{{ post.id }}">
+    {% if user.is_authenticated %}
+        <form class="comment-form mb-2" id="comment-form-{{ post.id }}" method="post"
+              action="{% url 'add_comment' post.id %}">
+            {% csrf_token %}
+            <div class="comment-input">
+                <textarea name="body" class="form-control" id="add_comment_{{ post.id }}" cols="30" rows="1"
+                          placeholder="Add a new comment.."></textarea>
+                <div class="fonts">
+                    <button type="submit" data-post_id="{{ post.id }}"
+                            class="btn btn-sm mb-1 p-0 text-primary add_comment">
+                        <i class="fa fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+    {% for comment in post.comment_list %}
+        <div class="d-flex flex-row mb-2">
+            {% if comment.name.profile.image %}
+                <img src="{{ comment.name.profile.image.url }}" width="30" height="30" class="rounded-circle">
+            {% else %}
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png"
+                     width="50" class="rounded-circle">
+            {% endif %}
+            <div class="d-flex flex-column ml-2">
+                <span class="font-weight-bold">{{ comment.get_author }}</span>
+                <small
+                        class="comment-text">{{ comment.body }}</small>
+                <div class="d-flex flex-row align-items-center text-muted">
+                    {% if request.user in comment.likes.all %}
+                        <i class="fas fa-heart text-primary"></i>
+                    {% else %}
+                        <i class="far fa-heart text-primary"></i>
+                    {% endif %}
+                    <small><span class="ml-2">{{ comment.likes.count }} Likes</span></small>
+                    <small class="mx-2"><a href="#" data-post_id="{{ post.id }}" data-id="{{ comment.id }}"
+                                           class="reply">Reply</a></small>
+                    <small class="mr-2">{{ comment.date_added|timesince }}</small>
+                </div>
+                {% if user.is_authenticated %}
+                    <form class="comment-form d-none" id="{{ post.id }}-reply-form-{{ comment.id }}" method="post"
+                          action="{% url 'add_comment' post.id %}">
+                        {% csrf_token %}
+                        <div class="comment-input">
+                        <textarea name="body" class="form-control" id="add_reply_{{ comment.id }}" cols="30" rows="1"
+                                  placeholder="Reply to the comment.."></textarea>
+                            <div class="fonts">
+                                <button type="submit" data-reply_id="{{ comment.id }}" data-post_id="{{ post.id }}"
+                                        class="btn btn-sm mb-1 p-0 text-primary add_reply">
+                                    <i class="fa fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                {% endif %}
+                {% for reply in comment.replies.all %}
+                    <div class="d-flex flex-row my-2">
+                        {% if reply.name.profile.image %}
+                            <img src="{{ reply.name.profile.image.url }}" width="30" height="30"
+                                 class="rounded-circle">
+                        {% else %}
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png"
+                                 width="50" class="rounded-circle">
+                        {% endif %}
+                        <div class="d-flex flex-column ml-2">
+                            <span class="font-weight-bold">{{ reply.get_author }}</span>
+                            <small
+                                    class="comment-text">{{ reply.body }}</small>
+                            <div class="d-flex flex-row align-items-center text-muted">
+                                {% if request.user in reply.likes.all %}
+                                    <i class="fas fa-heart text-primary"></i>
+                                {% else %}
+                                    <i class="far fa-heart text-primary"></i>
+                                {% endif %}
+                                <small><span class="ml-2">{{ reply.likes.count }} Likes</span></small>
+                                <small class="mx-2"><a href="#" data-post_id="{{ post.id }}" data-id="{{ comment.id }}"
+                                                       class="reply">Reply</a></small>
+                                <small class="mr-2">{{ reply.date_added|timesince }}</small>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>

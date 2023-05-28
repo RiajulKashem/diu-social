@@ -1,0 +1,10 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Post{% endblock %}
+
+{% block content %}
+    <div class="col-md-10 m-auto">
+        {% include 'blog/post.html' with post=post detail_view=1 %}
+    </div>
+
+{% endblock %}
