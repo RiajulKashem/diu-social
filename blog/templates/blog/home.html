@@ -81,8 +81,21 @@
             <br>
             <ul class="list-group">
                 {% for user in random_users %}
-                    <a href="{% url 'profile-detail-view' user.pk %}">
-                        <li class="list-group-item list-group-item-light">{{ user.username }}</li>
+                    <a href="{% url 'profile-detail-view' user.pk %}" class="nav-link">
+                        <li class="list-group-item list-group-item-light">
+                        <span class="img-cont2">
+                            <img src="{{ user.profile.image.url }}" alt="user" width="50" height="50"
+                                 class="rounded-circle">
+                            {% if user.profile.is_online %}
+                                <span class="online-circle3"></span>
+                            {% else %}
+                                <span class="offline-circle3"></span>
+                            {% endif %}
+                        </span>
+                            <span class="lead font-weight-bold ml-2 text-dark">
+                            {{ user.get_full_name }}
+                        </span>
+                        </li>
                     </a>
                 {% endfor %}
 
