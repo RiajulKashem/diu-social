@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '%g1^np(ql1!t+fk+xxo*a=24aagboexn#dxu@z=vl5=r&_o4cf'
+SECRET_KEY = '^5j#@n*!c6*g^phi@($0-shjyno9+nag6k&8%lgx8rze*c_&t4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 1
@@ -155,7 +155,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
@@ -220,3 +220,4 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
