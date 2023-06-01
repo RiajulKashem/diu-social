@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import AllSaveView, PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, SaveView, UserPostListView, like_post,LikeCommentView, posts_of_following_profiles,  AllLikeView
+from .views import AllSaveView, PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, SaveView, UserPostListView, like_post,like_comment_view, posts_of_following_profiles,  AllLikeView
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -16,7 +16,7 @@ urlpatterns = [
     path('post/save/', SaveView, name='post-save'),
     path('saved-posts/', AllSaveView, name='all-save'),
     path('post/<int:post_id>/comment/', views.comment_post, name='add_comment'),
-    path('post/comment/like/', LikeCommentView, name='comment-like'),
+    path('post/comment/like/', like_comment_view, name='comment-like'),
     path('about/', views.about, name='blog-about'),
     path('search/', views.search, name='search'),
 ]

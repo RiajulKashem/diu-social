@@ -43,6 +43,20 @@ $(() => {
             $('#comment_thread_' + post_id).html(data['html']);
         });
     })
+    // comment like
+    $(document).on('click', '.like_comment', function (e) {
+        e.preventDefault();
+        let id = $(this).data('comment_id');
+        let post_id = $(this).data('post_id');
+        let post_data = {
+            'comment_id': id,
+            'post_id': post_id,
+            'csrfmiddlewaretoken': csrftoken,
+        }
+        $.post('/post/comment/like/', post_data, (data) => {
+            $('#comment_thread_' + post_id).html(data['html']);
+        });
+    })
 
     $(document).on('click', '.reply', function (e) {
         e.preventDefault();

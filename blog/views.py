@@ -121,48 +121,19 @@ def SaveView(request):
         return JsonResponse({'form': html})
 
 
-""" Like post comments """
-
-
 @login_required
-def LikeCommentView(
-        request
-):  # , id1, id2              id1=post.pk id2=reply.pk
-    post = get_object_or_404(Comment, id=request.POST.get('id'))
-    cliked = False
-    if post.likes.filter(id=request.user.id).exists():
-        post.likes.remove(request.user)
-        cliked = False
+def like_comment_view(request):
+    comment = get_object_or_404(Comment, id=request.POST.get('comment_id'))
+    if comment.likes.filter(id=request.user.id).exists():
+        comment.likes.remove(request.user)
     else:
-        post.likes.add(request.user)
-        cliked = True
-
-    cpost = get_object_or_404(Post, id=request.POST.get('pid'))
-    total_comments2 = cpost.comments.all().order_by('-id')
-    total_comments = cpost.comments.all().filter(reply=None).order_by('-id')
-    tcl = {}
-    for cmt in total_comments2:
-        total_clikes = cmt.total_clikes()
-        cliked = False
-        if cmt.likes.filter(id=request.user.id).exists():
-            cliked = True
-
-        tcl[cmt.id] = cliked
-
-    context = {
-        'comment_form': CommentForm(),
-        'post': cpost,
-        'comments': total_comments,
-        'total_clikes': post.total_clikes(),
-        'clikes': tcl
-    }
-
-    if is_ajax(request=request):
-        html = render_to_string('blog/comments.html', context, request=request)
-        return JsonResponse({'form': html})
-
-
-""" Home page with all posts """
+        comment.likes.add(request.user)
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    post.refresh_from_db()
+    html = render_to_string(
+        'blog/comments.html', {'post': post}, request=request
+    )
+    return JsonResponse({'html': html})
 
 
 class PostListView(ListView):
