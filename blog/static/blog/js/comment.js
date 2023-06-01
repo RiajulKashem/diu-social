@@ -38,11 +38,9 @@ $(() => {
             alert('Please write a reply');
             return false;
         }
-        console.log('add reply ', reply, ' for comment id: ' + id, ' url: ' + url + ' post_data: ' + post_data)
         $.post(url, post_data, (data, status) => {
             console.log(data);
             $('#comment_thread_' + post_id).html(data['html']);
-            // comment_methods();
         });
     })
 
@@ -51,5 +49,13 @@ $(() => {
         let id = $(this).data('id');
         let post_id = $(this).data('post_id');
         $('#' + post_id + '-reply-form-' + id).toggleClass('d-none', 'd-block');
+    })
+
+    $(document).on('click', '.like_post', function (e) {
+        e.preventDefault();
+        let post_id = $(this).data('post_id');
+        $.post('/post/like/', {'id': post_id, 'csrfmiddlewaretoken': csrftoken}, (data) => {
+            $('#like_post_id_' + post_id).html(data['html']);
+        });
     })
 })

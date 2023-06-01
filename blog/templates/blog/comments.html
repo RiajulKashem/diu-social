@@ -29,11 +29,13 @@
                 <small
                         class="comment-text">{{ comment.body }}</small>
                 <div class="d-flex flex-row align-items-center text-muted">
-                    {% if request.user in comment.likes.all %}
-                        <i class="fas fa-heart text-primary"></i>
-                    {% else %}
-                        <i class="far fa-heart text-primary"></i>
-                    {% endif %}
+                    <a href="#" class="like_comment">
+                        {% if request.user in comment.likes.all %}
+                            <i class="fas fa-heart text-primary"></i>
+                        {% else %}
+                            <i class="far fa-heart text-primary"></i>
+                        {% endif %}
+                    </a>
                     <small><span class="ml-2">{{ comment.likes.count }} Likes</span></small>
                     <small class="mx-2"><a href="#" data-post_id="{{ post.id }}" data-id="{{ comment.id }}"
                                            class="reply">Reply</a></small>

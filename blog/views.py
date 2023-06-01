@@ -71,37 +71,26 @@ def posts_of_following_profiles(request):
 
 
 @login_required
-def LikeView(request):
-
+def like_post(request):
     post = get_object_or_404(Post, id=request.POST.get('id'))
-    liked = False
     if post.likes.filter(id=request.user.id).exists():
         post.likes.remove(request.user)
-        liked = False
         notify = Notification.objects.filter(
             post=post, sender=request.user, notification_type=1
         )
         notify.delete()
     else:
         post.likes.add(request.user)
-        liked = True
         notify = Notification(
             post=post, sender=request.user, user=post.author,
             notification_type=1
         )
         notify.save()
 
-    context = {
-        'post': post,
-        'total_likes': post.total_likes(),
-        'liked': liked,
-    }
-
-    if is_ajax(request=request):
-        html = render_to_string(
-            'blog/like_section.html', context, request=request
-        )
-        return JsonResponse({'form': html})
+    html = render_to_string(
+        'blog/like_section.html', {'post': post}, request=request
+    )
+    return JsonResponse({'html': html})
 
 
 """ Post save """
