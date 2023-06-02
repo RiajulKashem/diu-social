@@ -124,18 +124,20 @@
             <ul class="list-group">
                 {% for frnd in all_friends %}
                     <li class="list-group-item list-group-item-light">
-                        <span class="img-cont2">
+                        <a href="{% url 'room-choice' frnd.id %}" class="text-decoration-none">
+                            <span class="img-cont2">
                             <img src="{{ frnd.profile.image.url }}" alt="user" width="50" height="50"
                                  class="rounded-circle">
-                            {% if frnd.profile.is_online %}
-                                <span class="online-circle3"></span>
-                            {% else %}
-                                <span class="offline-circle3"></span>
-                            {% endif %}
+                                {% if frnd.profile.is_online %}
+                                    <span class="online-circle3"></span>
+                                {% else %}
+                                    <span class="offline-circle3"></span>
+                                {% endif %}
                         </span>
-                        <span class="lead font-weight-bold ml-2 text-dark">
+                            <span class="lead font-weight-bold ml-2 text-dark">
                             {{ frnd.get_full_name }}
                         </span>
+                        </a>
                     </li>
                 {% endfor %}
             </ul>

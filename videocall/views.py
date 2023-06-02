@@ -52,6 +52,7 @@ def validateVC(request,vc_to):
 def getToken(request):
     appId = os.environ.get('AGORA_APP_ID')
     appCertificate = os.environ.get('AGORA_APP_CERTIFICATE')
+    print(f'App ID: {appId} \nApp Certificate: {appCertificate}')
     channelName = request.GET.get('channel')
 
     try:

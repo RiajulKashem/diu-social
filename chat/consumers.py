@@ -1,10 +1,10 @@
-from chat.models import Chat, Room
 import json
+
+from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
-from asgiref.sync import sync_to_async, async_to_sync
 
-"""MESSAGE DB ENTRY"""
+from chat.models import Chat, Room
 
 
 @sync_to_async
@@ -21,8 +21,6 @@ def create_new_message(me, friend, message, room_id):
 
 
 class ChatRoomConsumer(AsyncWebsocketConsumer):
-
-    """Connect"""
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']

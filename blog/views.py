@@ -1,26 +1,24 @@
-from django.db.models import Q
+import random
+from itertools import chain
 
-from notification.models import Notification
-from django.core.checks import messages
-from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.urls import reverse_lazy, reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
+from django.http import JsonResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.template.loader import render_to_string
 from django.views.generic import (
-    ListView, DetailView, CreateView, UpdateView,
+    ListView, CreateView, UpdateView,
     DeleteView,
 )
-from .models import Comment, Post
-from .forms import CommentForm
-from django.http import HttpResponseRedirect, JsonResponse
-from users.models import Profile
-from itertools import chain
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.template.loader import render_to_string
-import random
+
 from blog.utils import is_ajax
+from notification.models import Notification
+from users.models import Profile
+from .models import Comment, Post
 
 """ Home page with all posts """
 
@@ -97,28 +95,20 @@ def like_post(request):
 
 
 @login_required
-def SaveView(request):
-
-    post = get_object_or_404(Post, id=request.POST.get('id'))
-    saved = False
+def save_post(request, pk):
+    post = get_object_or_404(Post, id=pk)
     if post.saves.filter(id=request.user.id).exists():
         post.saves.remove(request.user)
-        saved = False
+        messages.add_message(
+            request, messages.WARNING, 'Post removed from saved posts'
+        )
     else:
         post.saves.add(request.user)
-        saved = True
-
-    context = {
-        'post': post,
-        'total_saves': post.total_saves(),
-        'saved': saved,
-    }
-
-    if is_ajax(request=request):
-        html = render_to_string(
-            'blog/save_section.html', context, request=request
+        messages.add_message(
+            request, messages.INFO, 'Post added to saved posts'
         )
-        return JsonResponse({'form': html})
+    # redirect to previous  page
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
@@ -155,9 +145,6 @@ class PostListView(ListView):
         return context
 
 
-""" All the posts of the user """
-
-
 class UserPostListView(ListView):
     model = Post
     template_name = 'blog/user_posts.html'
@@ -169,17 +156,11 @@ class UserPostListView(ListView):
         return Post.objects.filter(author=user).order_by('-date_posted')
 
 
-""" Post detail view """
-
-
 def PostDetailView(request, pk):
     return render(
         request, 'blog/post_detail.html',
         {'post': get_object_or_404(Post, pk=pk)}
     )
-
-
-""" Create post """
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -209,9 +190,6 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return False
 
 
-""" Delete post """
-
-
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     success_url = '/'
@@ -223,14 +201,8 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return False
 
 
-""" About page """
-
-
 def about(request):
     return render(request, 'blog/about.html', {'title': 'About'})
-
-
-""" Search by post title or username """
 
 
 def search(request):
@@ -247,9 +219,6 @@ def search(request):
     return render(request, 'blog/search_results.html', params)
 
 
-""" Liked posts """
-
-
 @login_required
 def AllLikeView(request):
     user = request.user
@@ -258,9 +227,6 @@ def AllLikeView(request):
         'liked_posts': liked_posts
     }
     return render(request, 'blog/liked_posts.html', context)
-
-
-""" Saved posts """
 
 
 @login_required
